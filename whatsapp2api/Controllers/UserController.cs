@@ -26,7 +26,7 @@ namespace whatsapp2api.Controllers
             return Ok(users);
         }
 
-        [HttpGet("{id:Guid}")]
+        [HttpGet("{id:guid}")]
         public async Task<ActionResult<List<UserModel>>> Get(Guid id)
         {
             var user = await _repo.GetUserById(id);
@@ -40,10 +40,22 @@ namespace whatsapp2api.Controllers
         public async Task<ActionResult<UserModel>> Post([FromBody] UserCreate userBody)
         {
             var isUserExist = await _repo.DoesUserExist(userBody.Phone);
-            
-            if (isUserExist)return Conflict("User already exists");
-            
+
+            if (isUserExist) return Conflict("User already exists");
+
             var user = await _repo.CreateUser(userBody);
+
+            return Ok(user);
+        }
+
+        [HttpDelete("{id:guid}")]
+        public async Task<ActionResult<UserModel>> Delete(Guid id)
+        {
+            var user = await _repo.GetUserById(id);
+
+            if (user == null) return NotFound("No user matches this id");
+
+            await _repo.DeleteUser(id);
 
             return Ok(user);
         }

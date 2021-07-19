@@ -7,7 +7,7 @@ namespace whatsapp2api.Models.User
         [Required]
         [RegularExpression(@"(\+34|0034|34)?[ -]*(6|7)[ -]*([0-9][ -]*){8}",
             ErrorMessage = "Phone number is incorrect")]
-        public string Phone { get; }
+        public string Phone { get; set; }
 
         [Required] [MinLength(8)] public string Password { get; set; }
     }

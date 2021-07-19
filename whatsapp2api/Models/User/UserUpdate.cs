@@ -7,8 +7,8 @@ namespace whatsapp2api.Models.User
         [MinLength(5)]
         [RegularExpression("^[a-zA-Z0-9]+([._]?[a-zA-Z0-9]+)*$",
             ErrorMessage = "Username has illegal characters")]
-        public string Username { get; }
+        public string Username { get; set; }
 
-        [MinLength(8)] public string Password { get; }
+        [MinLength(8)] public string Password { get; set; }
     }
 }

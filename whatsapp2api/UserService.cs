@@ -1,4 +1,5 @@
 ﻿using System;
+using whatsapp2api.Entities;
 using whatsapp2api.Models;
 
 namespace whatsapp2api

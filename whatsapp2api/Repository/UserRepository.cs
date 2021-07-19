@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using whatsapp2api.Contracts;
+using whatsapp2api.Entities;
 using whatsapp2api.Models;
 using whatsapp2api.Models.Context;
 using whatsapp2api.Models.User;
@@ -28,7 +29,7 @@ namespace whatsapp2api.Repository
         {
             var entities = await _context.Users.ToListAsync();
 
-            return entities.Select(x => MapToDto(x));
+            return entities.Select(MapToDto);
         }
 
         public async Task<UserModel?> GetUserById(Guid id)

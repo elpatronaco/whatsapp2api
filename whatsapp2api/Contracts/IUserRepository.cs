@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using whatsapp2api.Entities;
 using whatsapp2api.Models;
 using whatsapp2api.Models.User;
 

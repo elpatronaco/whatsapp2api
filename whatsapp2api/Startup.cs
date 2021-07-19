@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -25,7 +26,8 @@ namespace whatsapp2api
         {
             services.AddControllers();
 
-            services.AddDbContext<RepositoryContext>();
+            services.AddDbContext<RepositoryContext>(x => 
+                x.UseNpgsql(Configuration.GetConnectionString("default")));
             services.AddScoped<IUserRepository, UserRepository>();
 
             services.AddSwaggerGen(c =>

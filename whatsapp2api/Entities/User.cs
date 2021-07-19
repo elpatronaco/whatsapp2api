@@ -4,39 +4,46 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using whatsapp2api.Helpers;
 
-namespace whatsapp2api.Models
+namespace whatsapp2api.Entities
 {
     [Table("users"), Index(nameof(Phone), IsUnique = true)]
     public class UserEntity
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid Id { get; }
+        public Guid Id { get; set; }
 
         [Required, RegularExpression(@"(\+34|0034|34)?[ -]*(6|7)[ -]*([0-9][ -]*){8}",
              ErrorMessage = "Phone number is incorrect")]
-        public string Phone { get; }
+        public string Phone { get; set; }
 
         [Required, MinLength(5)] public string Username { get; set; }
 
-        private readonly byte[] PasswordSalt;
-        private byte[] PasswordHash;
+        public byte[]? PasswordSalt { get; set; }
 
-        public UserEntity(string phoneNumber, string username, string password)
+        public byte[]? PasswordHash { get; set; }
+
+        public UserEntity()
         {
-            Phone = phoneNumber;
+        }
+
+        public UserEntity(string phone, string username, string? password = null)
+        {
+            Phone = phone;
             Username = username;
 
-            PasswordSalt = Crypto.Salt();
-            PasswordHash = Crypto.Hash(password, PasswordSalt);
+            if (password != null) ModifyPassword(password);
         }
 
         public void ModifyPassword(string newPassword)
         {
+            PasswordSalt ??= Crypto.Salt();
             PasswordHash = Crypto.Hash(newPassword, PasswordSalt);
         }
 
         public bool ValidatePassword(string password)
         {
+            if (PasswordSalt == null) return false;
+
             var hash = Crypto.Hash(password, PasswordSalt);
 
             return hash == PasswordHash;

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using whatsapp2api.Entities;
 
 namespace whatsapp2api.Models.Context
 {

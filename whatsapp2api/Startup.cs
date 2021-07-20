@@ -6,9 +6,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using whatsapp2api.Contracts;
+using whatsapp2api.Contracts.Repositories;
+using whatsapp2api.Contracts.Services;
 using whatsapp2api.Models;
 using whatsapp2api.Models.Context;
 using whatsapp2api.Repository;
+using whatsapp2api.Services;
 
 namespace whatsapp2api
 {
@@ -26,9 +29,10 @@ namespace whatsapp2api
         {
             services.AddControllers();
 
-            services.AddDbContext<RepositoryContext>(x => 
+            services.AddDbContext<RepositoryContext>(x =>
                 x.UseNpgsql(Configuration.GetConnectionString("default")));
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IUserService, UserService>();
 
             services.AddSwaggerGen(c =>
             {

@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using whatsapp2api.Helpers;
+using whatsapp2api.Models.User;
 
 namespace whatsapp2api.Entities
 {
@@ -47,6 +48,11 @@ namespace whatsapp2api.Entities
             var hash = Crypto.Hash(password, PasswordSalt);
 
             return hash == PasswordHash;
+        }
+
+        public UserModel ToDto()
+        {
+            return new() {Id = Id, Phone = Phone, Username = Username};
         }
     }
 }

@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using whatsapp2api.Contracts;
+using whatsapp2api.Contracts.Services;
 using whatsapp2api.Models.User;
 
 namespace whatsapp2api.Controllers
@@ -11,17 +11,17 @@ namespace whatsapp2api.Controllers
     [Route("api/users")]
     public class UserController : Controller
     {
-        private readonly IUserRepository _repo;
+        private readonly IUserService _service;
 
-        public UserController(IUserRepository repo)
+        public UserController(IUserService service)
         {
-            _repo = repo;
+            _service = service;
         }
 
         [HttpGet]
         public async Task<ActionResult<List<UserModel>>> Get()
         {
-            var users = await _repo.GetAllUsers();
+            var users = await _service.GetAllUsers();
 
             return Ok(users);
         }
@@ -29,7 +29,7 @@ namespace whatsapp2api.Controllers
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<List<UserModel>>> Get(Guid id)
         {
-            var user = await _repo.GetUserById(id);
+            var user = await _service.GetUserById(id);
 
             if (user == null) return NotFound("No user matches this id");
 
@@ -39,23 +39,23 @@ namespace whatsapp2api.Controllers
         [HttpPost]
         public async Task<ActionResult<UserModel>> Post([FromBody] UserCreate userBody)
         {
-            var isUserExist = await _repo.DoesUserExist(userBody.Phone);
+            var isUserExist = await _service.DoesUserExist(userBody.Phone);
 
             if (isUserExist) return Conflict("User already exists");
 
-            var user = await _repo.CreateUser(userBody);
+            var user = await _service.CreateUser(userBody);
 
-            return Ok(user);
+            return user == null ? Problem("User could not be created") : Ok(user);
         }
 
         [HttpDelete("{id:guid}")]
         public async Task<ActionResult<UserModel>> Delete(Guid id)
         {
-            var user = await _repo.GetUserById(id);
+            var user = await _service.GetUserById(id);
 
             if (user == null) return NotFound("No user matches this id");
 
-            await _repo.DeleteUser(id);
+            await _service.DeleteUser(id);
 
             return Ok(user);
         }

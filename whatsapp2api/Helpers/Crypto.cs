@@ -4,7 +4,7 @@ namespace whatsapp2api.Helpers
 {
     public static class Crypto
     {
-        public static byte[] Salt(int bytes = 64)
+        public static byte[] Salt(int bytes = 256)
         {
             var saltBytes = new byte[bytes];
 

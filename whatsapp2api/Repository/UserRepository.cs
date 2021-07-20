@@ -24,9 +24,9 @@ namespace whatsapp2api.Repository
             return _context.Users.ToListAsync();
         }
 
-        public Task<UserEntity> GetOneByCondition(Expression<Func<UserEntity, bool>> expression)
+        public async Task<UserEntity?> GetOneByCondition(Expression<Func<UserEntity, bool>> expression)
         {
-            return _context.Users.FirstOrDefaultAsync(expression);
+            return await _context.Users.FirstOrDefaultAsync(expression);
         }
 
         public async Task<UserEntity> CreateUser(UserCreate owner)

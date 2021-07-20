@@ -45,7 +45,7 @@ namespace whatsapp2api.Controllers
 
             var user = await _service.CreateUser(userBody);
 
-            return user == null ? Problem("User could not be created") : Ok(user);
+            return user != null ? Ok(user) : Problem("User could not be created");
         }
 
         [HttpDelete("{id:guid}")]

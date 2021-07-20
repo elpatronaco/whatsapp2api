@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using whatsapp2api.Helpers;
 using whatsapp2api.Models.User;
@@ -27,12 +28,11 @@ namespace whatsapp2api.Entities
         {
         }
 
-        public UserEntity(string phone, string username, string? password = null)
+        public UserEntity(string phone, string username, string password)
         {
             Phone = phone;
             Username = username;
-
-            if (password != null) ModifyPassword(password);
+            ModifyPassword(password);
         }
 
         public void ModifyPassword(string newPassword)
@@ -43,11 +43,11 @@ namespace whatsapp2api.Entities
 
         public bool ValidatePassword(string password)
         {
-            if (PasswordSalt == null) return false;
+            if (PasswordSalt is null || PasswordHash is null) return false;
 
             var hash = Crypto.Hash(password, PasswordSalt);
 
-            return hash == PasswordHash;
+            return hash.SequenceEqual(PasswordHash);
         }
 
         public UserModel ToDto()

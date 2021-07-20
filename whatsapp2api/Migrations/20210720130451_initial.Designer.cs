@@ -10,8 +10,8 @@ using whatsapp2api.Models.Context;
 namespace whatsapp2api.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20210719204855_init")]
-    partial class init
+    [Migration("20210720130451_initial")]
+    partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

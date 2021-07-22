@@ -1,5 +1,3 @@
-using System;
-
 namespace whatsapp2api.Models.Auth
 {
     public class Tokens

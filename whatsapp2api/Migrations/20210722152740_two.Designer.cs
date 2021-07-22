@@ -10,8 +10,8 @@ using whatsapp2api.Models.Context;
 namespace whatsapp2api.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20210720130451_initial")]
-    partial class initial
+    [Migration("20210722152740_two")]
+    partial class two
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -35,6 +35,9 @@ namespace whatsapp2api.Migrations
 
                     b.Property<string>("Phone")
                         .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("SocketConnectionId")
                         .HasColumnType("text");
 
                     b.Property<string>("Username")

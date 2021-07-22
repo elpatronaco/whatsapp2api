@@ -46,6 +46,10 @@ namespace whatsapp2api.Repository
 
             if (owner is not {Username: null}) entity.Username = owner.Username;
             if (owner is not {Password: null}) entity.ModifyPassword(owner.Password);
+            if (owner is not {SocketConnectionId: null})
+                entity.SocketConnectionId = owner.SocketConnectionId != string.Empty
+                    ? owner.SocketConnectionId
+                    : null;
 
             _context.Users.Update(entity);
             await _context.SaveChangesAsync();

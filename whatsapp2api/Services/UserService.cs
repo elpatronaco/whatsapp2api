@@ -21,11 +21,13 @@ namespace whatsapp2api.Services
     {
         private readonly RepositoryContext _context;
         private readonly IUserRepository _repo;
+        private readonly JwtSecurityTokenHandler _tokenHandler;
 
         public UserService(RepositoryContext context, IUserRepository repo)
         {
             _context = context;
             _repo = repo;
+            _tokenHandler = new JwtSecurityTokenHandler();
         }
 
         public async Task<IEnumerable<UserModel>> GetAllUsers()
@@ -128,13 +130,12 @@ namespace whatsapp2api.Services
             return _context.Users.AnyAsync(x => x.Phone == phone);
         }
 
-        private static Tokens? GenerateClientTokens(UserEntity entity)
+        private Tokens? GenerateClientTokens(UserEntity entity)
         {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(new Guid().ToString());
+            var key = Encoding.ASCII.GetBytes(new Guid().ToString()); // TODO: COGER KEY DEL ENVIRONMENT!
 
-            var idTokenPayload = new IdTokenPayload() {Id = entity.Id.ToString()};
-            var accessTokenPayload = new AccessTokenPayload() {Phone = entity.Phone, Username = entity.Username};
+            var idTokenPayload = new IdTokenPayload {Id = entity.Id.ToString()};
+            var accessTokenPayload = new AccessTokenPayload {Phone = entity.Phone, Username = entity.Username};
 
             var idTokenDescriptor = new SecurityTokenDescriptor
             {
@@ -144,7 +145,7 @@ namespace whatsapp2api.Services
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
                     SecurityAlgorithms.HmacSha512Signature)
             };
-            var idToken = tokenHandler.WriteToken(tokenHandler.CreateToken(idTokenDescriptor));
+            var idToken = _tokenHandler.WriteToken(_tokenHandler.CreateToken(idTokenDescriptor));
 
             var accessTokenDescriptor = new SecurityTokenDescriptor
             {
@@ -158,26 +159,25 @@ namespace whatsapp2api.Services
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
                     SecurityAlgorithms.HmacSha512Signature)
             };
-            var accessToken = tokenHandler.WriteToken(tokenHandler.CreateToken(accessTokenDescriptor));
+            var accessToken = _tokenHandler.WriteToken(_tokenHandler.CreateToken(accessTokenDescriptor));
 
             return idToken != null && accessToken != null
-                ? new Tokens() {IdToken = idToken, AccessToken = accessToken}
+                ? new Tokens {IdToken = idToken, AccessToken = accessToken}
                 : null;
         }
 
-        private static string? GenerateRefreshToken(UserEntity entity)
+        private string? GenerateRefreshToken(UserEntity entity)
         {
             var salt = Crypto.Salt(128);
             var hashPayload = string.Join(',', entity.Id, entity.Phone,
                 DateTime.Now.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ"));
             var hash = Encoding.ASCII.GetString(Crypto.Hash(hashPayload, salt));
 
-            var refreshTokenPayload = new RefreshTokenPayload() {Id = entity.Id.ToString(), Hash = hash};
+            var refreshTokenPayload = new RefreshTokenPayload {Id = entity.Id.ToString(), Hash = hash};
 
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(new Guid().ToString());
+            var key = Encoding.ASCII.GetBytes(new Guid().ToString()); // TODO: COGER KEY DEL ENVIRONMENT!
 
-            var refreshTokenDescriptor = new SecurityTokenDescriptor()
+            var refreshTokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[]
                 {
@@ -190,7 +190,38 @@ namespace whatsapp2api.Services
                     SecurityAlgorithms.HmacSha512Signature)
             };
 
-            return tokenHandler.WriteToken(tokenHandler.CreateToken(refreshTokenDescriptor));
+            return _tokenHandler.WriteToken(_tokenHandler.CreateToken(refreshTokenDescriptor));
+        }
+
+        public async Task<UserModel?> UserFromToken(string idToken)
+        {
+            var token = _tokenHandler.ReadJwtToken(idToken);
+
+            var idClaim = token.Claims.FirstOrDefault(x => x.Type == nameof(IdTokenPayload.Id));
+
+            if (idClaim == null) return null;
+
+            var id = Guid.Parse(idClaim.Value);
+
+            return await GetUserById(id);
+        }
+
+        public async Task SetUserConnectionId(Guid userId, string connectionId)
+        {
+            var updateDto = new UserUpdate {SocketConnectionId = connectionId};
+
+            await _repo.UpdateUser(userId, updateDto);
+        }
+
+        public async Task RemoveUserConnectionId(string connectionId)
+        {
+            var user = await _repo.GetOneByCondition(x => x.SocketConnectionId == connectionId);
+
+            if (user == null) return;
+
+            var updateDto = new UserUpdate {SocketConnectionId = string.Empty};
+
+            await _repo.UpdateUser(user.Id, updateDto);
         }
     }
 }

@@ -18,5 +18,8 @@ namespace whatsapp2api.Contracts.Services
         Task<Tuple<Tokens, string>?> Register(UserCreate owner);
         Task<bool> DoesUserExist(Guid id);
         Task<bool> DoesUserExist(string phone);
+        Task<UserModel?> UserFromToken(string idToken);
+        Task SetUserConnectionId(Guid user, string connectionId);
+        Task RemoveUserConnectionId(string connectionId);
     }
 }

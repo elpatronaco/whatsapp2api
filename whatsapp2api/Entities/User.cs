@@ -8,22 +8,10 @@ using whatsapp2api.Models.User;
 
 namespace whatsapp2api.Entities
 {
-    [Table("users"), Index(nameof(Phone), IsUnique = true)]
+    [Table("users")]
+    [Index(nameof(Phone), IsUnique = true)]
     public class UserEntity
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid Id { get; set; }
-
-        [Required, RegularExpression(@"(\+34|0034|34)?[ -]*(6|7)[ -]*([0-9][ -]*){8}",
-             ErrorMessage = "Phone number is incorrect")]
-        public string Phone { get; set; }
-
-        [Required, MinLength(5)] public string Username { get; set; }
-
-        public byte[]? PasswordSalt { get; set; }
-
-        public byte[]? PasswordHash { get; set; }
-
         public UserEntity()
         {
         }
@@ -34,6 +22,23 @@ namespace whatsapp2api.Entities
             Username = username;
             ModifyPassword(password);
         }
+
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public Guid Id { get; set; }
+
+        [Required]
+        [RegularExpression(@"(\+34|0034|34)?[ -]*(6|7)[ -]*([0-9][ -]*){8}",
+            ErrorMessage = "Phone number is incorrect")]
+        public string Phone { get; set; }
+
+        [Required] [MinLength(5)] public string Username { get; set; }
+
+        public string? SocketConnectionId { get; set; }
+
+        public byte[]? PasswordSalt { get; set; }
+
+        public byte[]? PasswordHash { get; set; }
 
         public void ModifyPassword(string newPassword)
         {

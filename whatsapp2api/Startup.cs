@@ -5,10 +5,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using whatsapp2api.Contracts;
 using whatsapp2api.Contracts.Repositories;
 using whatsapp2api.Contracts.Services;
-using whatsapp2api.Models;
 using whatsapp2api.Models.Context;
 using whatsapp2api.Repository;
 using whatsapp2api.Services;
@@ -27,12 +25,23 @@ namespace whatsapp2api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddCors(options =>
+            {
+                options.AddPolicy(
+                    "ApiCorsPolicy",
+                    builder =>
+                        builder.WithOrigins("http://localhost:4200").AllowAnyMethod().AllowAnyHeader()
+                            .AllowCredentials());
+            });
 
             services.AddDbContext<RepositoryContext>(x =>
                 x.UseNpgsql(Configuration.GetConnectionString("default")));
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ChatHub>();
+
+            services.AddControllers();
+            services.AddSignalR();
 
             services.AddSwaggerGen(c =>
             {
@@ -51,13 +60,19 @@ namespace whatsapp2api
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "whatsapp2api v1"));
             }
 
+            app.UseCors("ApiCorsPolicy");
+
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.MapHub<ChatHub>("/hub");
+            });
         }
     }
 }

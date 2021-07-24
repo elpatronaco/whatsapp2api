@@ -12,17 +12,6 @@ namespace whatsapp2api.Entities
     [Index(nameof(Phone), IsUnique = true)]
     public class UserEntity
     {
-        public UserEntity()
-        {
-        }
-
-        public UserEntity(string phone, string username, string password)
-        {
-            Phone = phone;
-            Username = username;
-            ModifyPassword(password);
-        }
-
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
@@ -39,6 +28,17 @@ namespace whatsapp2api.Entities
         public byte[]? PasswordSalt { get; set; }
 
         public byte[]? PasswordHash { get; set; }
+
+        public UserEntity()
+        {
+        }
+
+        public UserEntity(string phone, string username, string password)
+        {
+            Phone = phone;
+            Username = username;
+            ModifyPassword(password);
+        }
 
         public void ModifyPassword(string newPassword)
         {

@@ -36,8 +36,13 @@ namespace whatsapp2api
 
             services.AddDbContext<RepositoryContext>(x =>
                 x.UseNpgsql(Configuration.GetConnectionString("default")));
+
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IMessageRepository, MessageRepository>();
+
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IMessageService, MessageService>();
+
             services.AddScoped<ChatHub>();
 
             services.AddControllers();

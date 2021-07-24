@@ -51,6 +51,13 @@ namespace whatsapp2api.Services
             return entity?.ToDto();
         }
 
+        public async Task<Guid?> GetUserIdByConnectionId(string connectionId)
+        {
+            var entity = await _repo.GetOneByCondition(x => x.SocketConnectionId == connectionId);
+
+            return entity?.Id;
+        }
+
         public async Task<UserModel?> CreateUser(UserCreate owner)
         {
             var isUserExist = await DoesUserExist(owner.Phone);

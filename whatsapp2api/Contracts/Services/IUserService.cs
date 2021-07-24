@@ -11,6 +11,7 @@ namespace whatsapp2api.Contracts.Services
         Task<IEnumerable<UserModel>> GetAllUsers();
         Task<UserModel?> GetUserById(Guid id);
         Task<UserModel?> GetUserByPhone(string phone);
+        Task<Guid?> GetUserIdByConnectionId(string connectionId);
         Task<UserModel?> CreateUser(UserCreate owner);
         Task<UserModel?> UpdateUser(Guid id, UserUpdate owner);
         Task<UserModel?> DeleteUser(Guid id);

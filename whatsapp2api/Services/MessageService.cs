@@ -6,7 +6,6 @@ using whatsapp2api.Contracts.Repositories;
 using whatsapp2api.Contracts.Services;
 using whatsapp2api.Models.Chat;
 using whatsapp2api.Models.Message;
-using whatsapp2api.Models.User;
 
 namespace whatsapp2api.Services
 {
@@ -27,20 +26,21 @@ namespace whatsapp2api.Services
                 await _messageRepository.GetByCondition(
                     x => x.SenderId == senderId && x.RecipientId == recipientId);
 
-            return messages.Select(x => x.ToDto()).ToList();
+            return messages.Select(x => x.ToDto(senderId)).ToList();
         }
 
         public async Task<IEnumerable<OpenChat>> GetOpenChats(Guid senderId)
         {
             var messages = await _messageRepository
                 .GetByCondition(x => x.SenderId == senderId);
-            
+
             var distinctRecipients = messages
                 .GroupBy(x => x.RecipientId)
                 .Select(async x => await _userService.GetUserById(x.Key))
                 .Select(x => x.Result)
-                .Where(x => x != null)
-                .ToList() as IEnumerable<UserModel>;
+                .Where(x => x is not null)
+                .Select(x => x!)
+                .ToList();
 
             return distinctRecipients.Select(user =>
             {
@@ -50,8 +50,19 @@ namespace whatsapp2api.Services
                     .ThenByDescending(message => message.SentDate.TimeOfDay)
                     .FirstOrDefault();
 
-                return new OpenChat() {Recipient = user, LastMessage = lastMessage.ToDto()};
+                return new OpenChat {Recipient = user, LastMessage = lastMessage?.ToDto(senderId)};
             });
+        }
+
+        public async Task<MessageModel?> NewMessage(string connectionId, MessageCreate owner)
+        {
+            var userId = await _userService.GetUserIdByConnectionId(connectionId);
+
+            if (!userId.HasValue) return null;
+
+            var message = await _messageRepository.CreateMessage(userId.Value, owner);
+
+            return message.ToDto(userId.Value);
         }
     }
 }

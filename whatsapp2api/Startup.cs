@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using whatsapp2api.Contracts.Repositories;
 using whatsapp2api.Contracts.Services;
+using whatsapp2api.Hubs;
 using whatsapp2api.Models.Context;
 using whatsapp2api.Repository;
 using whatsapp2api.Services;

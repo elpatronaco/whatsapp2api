@@ -28,7 +28,7 @@ namespace whatsapp2api.Entities
         {
         }
 
-        public MessageEntity(Guid senderId, Guid recipientId, string content, DateTime? sentDate)
+        public MessageEntity(Guid senderId, Guid recipientId, string content, DateTime? sentDate = null)
         {
             SenderId = senderId;
             RecipientId = recipientId;
@@ -36,13 +36,12 @@ namespace whatsapp2api.Entities
             SentDate = sentDate ?? DateTime.Now;
         }
 
-        public MessageModel ToDto()
+        public MessageModel ToDto(Guid senderId)
         {
             return new()
             {
                 Id = Id,
-                Sender = Sender.ToDto(),
-                Recipient = Recipient.ToDto(),
+                AmISender = SenderId == senderId,
                 Content = Content,
                 SentDate = SentDate
             };

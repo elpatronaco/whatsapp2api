@@ -57,7 +57,7 @@ namespace whatsapp2api.Entities
 
         public UserModel ToDto()
         {
-            return new() {Id = Id, Phone = Phone, Username = Username};
+            return new() {Id = Id, Phone = Phone, Username = Username, SocketConnectionId = SocketConnectionId};
         }
     }
 }

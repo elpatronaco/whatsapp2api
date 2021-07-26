@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using whatsapp2api.Entities;
+using whatsapp2api.Models.Message;
 
 namespace whatsapp2api.Contracts.Repositories
 {
@@ -10,8 +11,7 @@ namespace whatsapp2api.Contracts.Repositories
     {
         
         Task<List<MessageEntity>> GetByCondition(Expression<Func<MessageEntity, bool>> expression);
-
         Task<MessageEntity?> GetOneByCondition(Expression<Func<MessageEntity, bool>> expression);
-        // Task<UserEntity> CreateMessage(UserCreate owner);
+        Task<MessageEntity> CreateMessage(Guid senderId, MessageCreate owner);
     }
 }

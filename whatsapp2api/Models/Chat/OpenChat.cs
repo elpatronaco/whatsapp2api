@@ -6,6 +6,6 @@ namespace whatsapp2api.Models.Chat
     public class OpenChat
     {
         public UserModel Recipient { get; set; }
-        public MessageModel LastMessage { get; set; }
+        public MessageModel? LastMessage { get; set; }
     }
 }

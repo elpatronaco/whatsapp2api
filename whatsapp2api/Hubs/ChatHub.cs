@@ -55,19 +55,17 @@ namespace whatsapp2api.Hubs
 
             MessageCreate message = new() {Content = msg, RecipientId = parsedRecipientId};
 
-            var model = await _messageService.NewMessage(Context.ConnectionId, message);
+            var models = await _messageService.NewMessage(Context.ConnectionId, message);
 
-            if (model == null) return;
+            if (models == null) return;
 
-            await Clients.Caller.SendAsync("New Message", model);
+            await Clients.Caller.SendAsync("New Message", models.Item1);
 
             var recipient = await _userService.GetUserById(parsedRecipientId);
 
-            model.AmISender = false;
-
             if (recipient is not null && recipient is not {SocketConnectionId: null})
                 await Clients.Client(recipient.SocketConnectionId)
-                    .SendAsync("New Message", model);
+                    .SendAsync("New Message", models.Item2);
         }
 
         public override async Task OnDisconnectedAsync(Exception? exception)

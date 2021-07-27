@@ -41,6 +41,7 @@ namespace whatsapp2api.Entities
             return new()
             {
                 Id = Id,
+                RecipientId = senderId == SenderId ? RecipientId : SenderId,
                 AmISender = SenderId == senderId,
                 Content = Content,
                 SentDate = SentDate

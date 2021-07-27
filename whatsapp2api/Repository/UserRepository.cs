@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -19,9 +20,14 @@ namespace whatsapp2api.Repository
             _context = context;
         }
 
-        public Task<List<UserEntity>> GetAllUsers()
+        public async Task<List<UserEntity>> GetAllUsers()
         {
-            return _context.Users.ToListAsync();
+            return await _context.Users.ToListAsync();
+        }
+
+        public async Task<List<UserEntity>> GetFilteredUsers(Expression<Func<UserEntity, bool>> expression)
+        {
+            return await _context.Users.Where(expression).ToListAsync();
         }
 
         public async Task<UserEntity?> GetOneByCondition(Expression<Func<UserEntity, bool>> expression)

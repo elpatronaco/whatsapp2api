@@ -37,6 +37,13 @@ namespace whatsapp2api.Services
             return users.Select(x => x.ToDto());
         }
 
+        public async Task<IEnumerable<UserModel>> GetUsersMinusCaller(Guid senderId)
+        {
+            var users = await _repo.GetFilteredUsers(x => x.Id != senderId);
+
+            return users.Select(x => x.ToDto());
+        }
+
         public async Task<UserModel?> GetUserById(Guid id)
         {
             var entity = await _repo.GetOneByCondition(x => x.Id == id);

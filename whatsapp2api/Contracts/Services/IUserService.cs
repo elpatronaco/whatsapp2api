@@ -9,6 +9,7 @@ namespace whatsapp2api.Contracts.Services
     public interface IUserService
     {
         Task<IEnumerable<UserModel>> GetAllUsers();
+        Task<IEnumerable<UserModel>> GetUsersMinusCaller(Guid senderId);
         Task<UserModel?> GetUserById(Guid id);
         Task<UserModel?> GetUserByPhone(string phone);
         Task<Guid?> GetUserIdByConnectionId(string connectionId);

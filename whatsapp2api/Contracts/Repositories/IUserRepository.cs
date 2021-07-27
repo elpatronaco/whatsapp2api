@@ -10,6 +10,7 @@ namespace whatsapp2api.Contracts.Repositories
     public interface IUserRepository
     {
         Task<List<UserEntity>> GetAllUsers();
+        Task<List<UserEntity>> GetFilteredUsers(Expression<Func<UserEntity, bool>> expression);
         Task<UserEntity?> GetOneByCondition(Expression<Func<UserEntity, bool>> expression);
         Task<UserEntity> CreateUser(UserCreate owner);
         Task<UserEntity> UpdateUser(Guid id, UserUpdate owner);

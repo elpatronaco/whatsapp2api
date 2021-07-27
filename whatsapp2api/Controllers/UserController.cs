@@ -21,9 +21,15 @@ namespace whatsapp2api.Controllers
         [HttpGet]
         public async Task<ActionResult<List<UserModel>>> Get()
         {
-            var users = await _service.GetAllUsers();
+            if (!Request.Headers.ContainsKey("Authorization"))
+                return Ok(await _service.GetAllUsers());
 
-            return Ok(users);
+            var user = await _service.UserFromToken(Request.Headers["Authorization"]);
+
+            return
+                user != null
+                    ? Ok(await _service.GetUsersMinusCaller(user.Id))
+                    : Ok(await _service.GetAllUsers());
         }
 
         [HttpGet("{id:guid}")]

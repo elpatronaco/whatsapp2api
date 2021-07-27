@@ -82,17 +82,21 @@ namespace whatsapp2api.Services
             });
         }
 
-        public async Task<MessageModel?> NewMessage(string connectionId, MessageCreate owner)
+        public async Task<Tuple<MessageModel, MessageModel>?> NewMessage(string connectionId, MessageCreate owner)
         {
             var userId = await _userService.GetUserIdByConnectionId(connectionId);
 
-            if (!userId.HasValue) return null;
+            if (!userId.HasValue || owner.Content.Length == 0) return null;
 
-            if (owner.Content.Length == 0) return null;
+            if (userId == owner.RecipientId)
+                throw new ArgumentException("Can't send messages to yourself");
 
             var message = await _messageRepository.CreateMessage(userId.Value, owner);
 
-            return message.ToDto(userId.Value);
+            var senderModel = message.ToDto(userId.Value);
+            var recipientModel = message.ToDto(owner.RecipientId);
+
+            return new Tuple<MessageModel, MessageModel>(senderModel, recipientModel);
         }
     }
 }

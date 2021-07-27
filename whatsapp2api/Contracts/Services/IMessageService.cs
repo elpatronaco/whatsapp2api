@@ -10,6 +10,6 @@ namespace whatsapp2api.Contracts.Services
     {
         Task<IEnumerable<MessageModel>> GetMessagesFromSenderToRecipient(Guid senderId, Guid recipientId);
         Task<IEnumerable<OpenChat>> GetOpenChats(Guid senderId);
-        Task<MessageModel?> NewMessage(string connectionId, MessageCreate owner);
+        Task<Tuple<MessageModel, MessageModel>?> NewMessage(string connectionId, MessageCreate owner);
     }
 }

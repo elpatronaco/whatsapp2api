@@ -6,9 +6,27 @@ using whatsapp2api.Contracts.Repositories;
 using whatsapp2api.Contracts.Services;
 using whatsapp2api.Models.Chat;
 using whatsapp2api.Models.Message;
+using whatsapp2api.Models.User;
 
 namespace whatsapp2api.Services
 {
+    public class UserComparer : IEqualityComparer<UserModel>
+    {
+        public bool Equals(UserModel? x, UserModel? y)
+        {
+            if (ReferenceEquals(x, y)) return true;
+            if (ReferenceEquals(x, null)) return false;
+            if (ReferenceEquals(y, null)) return false;
+
+            return x.GetType() == y.GetType() && x.Id.Equals(y.Id);
+        }
+
+        public int GetHashCode(UserModel obj)
+        {
+            return obj.Id.GetHashCode();
+        }
+    }
+
     public class MessageService : IMessageService
     {
         private readonly IMessageRepository _messageRepository;
@@ -24,7 +42,9 @@ namespace whatsapp2api.Services
         {
             var messages =
                 await _messageRepository.GetByCondition(
-                    x => x.SenderId == senderId && x.RecipientId == recipientId);
+                    x =>
+                        x.SenderId == senderId && x.RecipientId == recipientId ||
+                        x.SenderId == recipientId && x.RecipientId == senderId);
 
             return messages.Select(x => x.ToDto(senderId)).ToList();
         }
@@ -46,12 +66,14 @@ namespace whatsapp2api.Services
                 .Select(x => x.Result)
                 .Where(x => x is not null)
                 .Select(x => x!)
+                .Distinct(new UserComparer())
                 .ToList();
 
             return distinctRecipients.Select(user =>
             {
                 var lastMessage = messages
-                    .Where(message => message.RecipientId == user.Id)
+                    .Where(message =>
+                        message.RecipientId == user.Id || message.SenderId == user.Id)
                     .OrderByDescending(message => message.SentDate.Date)
                     .ThenByDescending(message => message.SentDate.TimeOfDay)
                     .FirstOrDefault();

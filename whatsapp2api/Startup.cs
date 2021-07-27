@@ -1,7 +1,5 @@
-using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -51,8 +49,6 @@ namespace whatsapp2api
             services.AddControllers();
             services.AddSignalR();
 
-            services.AddSpaStaticFiles(conf => { conf.RootPath = Path.Combine("Front", "dist"); });
-
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo {Title = "whatsapp2api", Version = "v1"});
@@ -82,16 +78,6 @@ namespace whatsapp2api
             {
                 endpoints.MapControllers();
                 endpoints.MapHub<ChatHub>("/hub");
-            });
-
-            app.UseSpa(spa =>
-            {
-                spa.Options.SourcePath = "Front";
-
-                if (env.IsDevelopment())
-                {
-                    spa.UseAngularCliServer("start");
-                }
             });
         }
     }

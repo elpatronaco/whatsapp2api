@@ -32,11 +32,17 @@ namespace whatsapp2api.Services
         public async Task<IEnumerable<OpenChat>> GetOpenChats(Guid senderId)
         {
             var messages = await _messageRepository
-                .GetByCondition(x => x.SenderId == senderId);
+                .GetByCondition(x =>
+                    x.SenderId == senderId || x.RecipientId == senderId);
 
             var distinctRecipients = messages
-                .GroupBy(x => x.RecipientId)
-                .Select(async x => await _userService.GetUserById(x.Key))
+                .GroupBy(x => new {x.SenderId, x.RecipientId})
+                .Select(async x =>
+                    await _userService.GetUserById(
+                        x.Key.SenderId.Equals(senderId)
+                            ? x.Key.RecipientId
+                            : x.Key.SenderId)
+                )
                 .Select(x => x.Result)
                 .Where(x => x is not null)
                 .Select(x => x!)
@@ -59,6 +65,8 @@ namespace whatsapp2api.Services
             var userId = await _userService.GetUserIdByConnectionId(connectionId);
 
             if (!userId.HasValue) return null;
+
+            if (owner.Content.Length == 0) return null;
 
             var message = await _messageRepository.CreateMessage(userId.Value, owner);
 

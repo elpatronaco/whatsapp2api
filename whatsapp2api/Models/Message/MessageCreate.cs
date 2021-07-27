@@ -1,10 +1,11 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace whatsapp2api.Models.Message
 {
     public class MessageCreate
     {
-        public Guid RecipientId { get; set; }
-        public string Content { get; set; }
+        [Required] public Guid RecipientId { get; set; }
+        [Required, MinLength(1)] public string Content { get; set; }
     }
 }

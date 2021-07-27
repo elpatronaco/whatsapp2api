@@ -1,0 +1,81 @@
+@import '../../../variables'
+
+.chat
+  &__wrapper
+    height: 100%
+    width: 100%
+    display: flex
+    flex-direction: column
+
+    header
+      height: 2.5rem
+      padding: 0.5em
+      display: flex
+      flex-direction: row
+      justify-content: flex-start
+      gap: 1rem
+      align-items: center
+      background-color: $toolbar-bg
+      border-bottom: 1px solid #dcdcdc
+
+      .avatar
+        height: 80%
+
+    .bottom-row
+      display: flex
+      flex-direction: row
+      padding: 1rem
+      gap: 1rem
+      background-color: #f0f0f0
+      align-items: center
+
+      > *
+        height: 2rem
+
+      input
+        flex: 1
+        border-radius: 3rem
+        outline: none
+        border: none
+        padding: 0.5rem 2rem 0.5rem 2rem
+        font-size: 1rem
+
+      button
+        border: none
+        outline: none
+        cursor: pointer
+
+  &__message__wrapper
+    background-image: url('../../../../assets/chatbg.jpg')
+    background-size: cover
+    display: flex
+    flex-direction: column
+    justify-content: flex-end
+    padding: 1rem 10% 1rem 10%
+    gap: 2px
+    overflow-x: hidden
+    overflow-y: scroll
+    flex: 20
+
+  &__message
+    display: flex
+    flex-direction: row
+
+    &.sender
+      justify-content: flex-end
+
+      div
+        background-color: #dcf8c6
+
+    &.recipient
+      justify-content: flex-start
+
+      div
+        background-color: #ffffff
+
+    div
+      border-radius: 0.5rem
+      padding: 0.5rem
+      box-shadow: 0 1px .5px rgba(var(--shadow-rgb), .13)
+      word-break: break-word
+      max-width: 60%
